@@ -21,15 +21,17 @@ React App
 
 ## Notes
 
-Need to use Selenium because Obsidian is a dynamic site. Parse with Beautiful Soup. 
+Needed to use Selenium because Obsidian is a dynamic site. Parse with Beautiful Soup. 
 
-Highlighting is not functional because I am using metadata to populate value, but only `chunk_html` is highlighted
+Highlighting is not functional because I am using metadata to populate values, but only `chunk_html` is highlighted
 
 Download counts were not scraped.
 
-I did not implement paging.
+Scraper does not include all plugins: the Obsidian plugin page updates and removes results dynamically according to current view, and it's challenging to scrape all data under those conditions. 
 
-## Installation
+I did not implement paging in the search results (limited to `page_size` in search request).
+
+## Installation and Usage
 
 ### Scraper/ Chunker
 
@@ -51,4 +53,14 @@ install required modules:
 
 (if needed) update `scraper_chunker.py` values: `target_url`, `tr_organization`, `tr_dataset`, `tr_apikey`
 
-run: `python3 scraper_chunker.py`
+run scraper and upload chunks to Trieve: `python3 scraper_chunker.py`
+
+### React App
+
+install dependencies from `package.json`:
+
+`yarn`
+
+run web app:
+
+`yarn start`
