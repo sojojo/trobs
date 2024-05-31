@@ -42,48 +42,57 @@ function ResultsDisplay({ query, results, setResults }){
     'Content-Type': 'application/json',
     'TR-Dataset': '98d5f5aa-4f78-488d-9b9a-06e218296d36'
   }
-  const tr_body = JSON.stringify({
-    date_bias: false,
-    get_collisions: true,
-    highlight_delimiters: [
-      "?",
-      ",",
-      ".",
-      "!"
-    ],
-    highlight_results: true,
-    page: 1,
-    page_size: 10,
-    query: query,
-    score_threshold: 0.75,
-    search_type: "semantic",
-    use_weights: true
-  })
+  let page_count = 0;
+  let total_page_count = 0;
+  let items = [];
 
-  useEffect(() => {
-    fetch(url, { 
-      method: 'POST',
-      headers: tr_headers, 
-      body: tr_body
-    }).then(res => res.json())
-      .then(data => { setResults(data.score_chunks); });
-  }, [tr_body]);
+  do {
+    let tr_body = JSON.stringify({
+      date_bias: false,
+      get_collisions: true,
+      highlight_delimiters: [
+        "?",
+        ",",
+        ".",
+        "!"
+      ],
+      highlight_results: true,
+      page: page_count+1,
+      page_size: 50,
+      get_total_pages: true,
+      query: query,
+      score_threshold: 0.75,
+      search_type: "semantic",
+      use_weights: true
+    })
 
-  console.log(results);
+    // NOTE: can't get the `total_chunk_pages` value, so pagination doesn't work
 
-  let rows = [];
-  for (let i = 0; i < results.length; i++) {
-    let result_meta = results[i].metadata[0].metadata;
-    rows.push(<Result 
-      result_meta={ result_meta }
-    />);
-  } 
+    useEffect(() => {
+      fetch(url, { 
+        method: 'POST',
+        headers: tr_headers, 
+        body: tr_body
+      }).then(res => res.json())
+        .then(data => { setResults(data.score_chunks); });
+    }, [tr_body]);
 
-  // let result_meta = {name:"Calibre", author:"caronchen", description:"Access your Calibre libraries and read books directly in Obsidian.", link:"https://github.com/caronchen/obsidian-calibre-plugin"}
+    console.log(results);
+
+    
+    for (let i = 0; i < results.length; i++) {
+      let result_meta = results[i].metadata[0].metadata;
+      items.push(<Result 
+        result_meta={ result_meta }
+      />);
+    }
+    page_count = page_count + 1;
+    total_page_count = results.total_page_count;
+  } while(page_count < total_page_count);
 
   return (
     <div className="plugins-container container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      { rows }
+      { items }
     </div>
   )
 }

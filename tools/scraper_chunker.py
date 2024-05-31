@@ -25,6 +25,8 @@ def scrape_html():
 
 	browser.get(target_url)
 
+	browser.maximize_window()
+
 	# ensure that the page has fully loaded 
 	time.sleep(20)
 
